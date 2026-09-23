@@ -1,0 +1,34 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: floodgate-egress-loyalty-service-to-user-profile
+  namespace: ecommerce
+  labels:
+    managed-by: floodgate
+    floodgate-policy-type: allow-egress
+    source-workload: loyalty-service
+    source-namespace: ecommerce
+    target-service: user-profile
+    target-port: '8080'
+spec:
+  podSelector:
+    matchLabels:
+      app: loyalty-service
+  policyTypes:
+    - Egress
+  egress:
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: identity
+          podSelector:
+            matchLabels:
+              app: user-profile
+      ports:
+        - port: 8080
+          protocol: TCP
+    - ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
