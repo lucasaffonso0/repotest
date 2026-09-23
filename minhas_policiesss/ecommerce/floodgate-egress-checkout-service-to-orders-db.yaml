@@ -1,0 +1,34 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: floodgate-egress-checkout-service-to-orders-db
+  namespace: ecommerce
+  labels:
+    managed-by: floodgate
+    floodgate-policy-type: allow-egress
+    source-workload: checkout-service
+    source-namespace: ecommerce
+    target-service: orders-db
+    target-port: '8080'
+spec:
+  podSelector:
+    matchLabels:
+      app: checkout-service
+  policyTypes:
+    - Egress
+  egress:
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: data
+          podSelector:
+            matchLabels:
+              app: orders-db
+      ports:
+        - port: 8080
+          protocol: TCP
+    - ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
