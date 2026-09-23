@@ -1,0 +1,34 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: floodgate-egress-storefront-to-api-gateway
+  namespace: ecommerce
+  labels:
+    managed-by: floodgate
+    floodgate-policy-type: allow-egress
+    source-workload: storefront
+    source-namespace: ecommerce
+    target-service: api-gateway
+    target-port: '8080'
+spec:
+  podSelector:
+    matchLabels:
+      app: storefront
+  policyTypes:
+    - Egress
+  egress:
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: platform
+          podSelector:
+            matchLabels:
+              app: api-gateway
+      ports:
+        - port: 8080
+          protocol: TCP
+    - ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
