@@ -1,0 +1,29 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: floodgate-allow-log-aggregator-observability-to-cart-service
+  namespace: ecommerce
+  labels:
+    managed-by: floodgate
+    floodgate-policy-type: allow
+    source-workload: log-aggregator
+    source-namespace: observability
+    target-service: cart-service
+    target-port: '8080'
+spec:
+  podSelector:
+    matchLabels:
+      app: cart-service
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: observability
+          podSelector:
+            matchLabels:
+              app: log-aggregator
+      ports:
+        - port: 8080
+          protocol: TCP
