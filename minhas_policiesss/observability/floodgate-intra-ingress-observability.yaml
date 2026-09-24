@@ -1,5 +1,5 @@
 apiVersion: networking.k8s.io/v1
-kind: NetworkPolicy
+kind: NetworkPolicyfa
 metadata:
   name: floodgate-intra-ingress-observability
   namespace: observability
