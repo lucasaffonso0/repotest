@@ -1,0 +1,34 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: floodgate-egress-log-shipper-to-support-portal
+  namespace: logging
+  labels:
+    managed-by: floodgate
+    floodgate-policy-type: allow-egress
+    source-workload: log-shipper
+    source-namespace: logging
+    target-service: support-portal
+    target-port: '8080'
+spec:
+  podSelector:
+    matchLabels:
+      app: log-shipper
+  policyTypes:
+    - Egress
+  egress:
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: support
+          podSelector:
+            matchLabels:
+              app: support-portal
+      ports:
+        - port: 8080
+          protocol: TCP
+    - ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
