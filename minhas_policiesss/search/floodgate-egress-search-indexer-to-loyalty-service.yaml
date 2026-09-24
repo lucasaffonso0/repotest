@@ -1,0 +1,34 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: floodgate-egress-search-indexer-to-loyalty-service
+  namespace: search
+  labels:
+    managed-by: floodgate
+    floodgate-policy-type: allow-egress
+    source-workload: search-indexer
+    source-namespace: search
+    target-service: loyalty-service
+    target-port: '8080'
+spec:
+  podSelector:
+    matchLabels:
+      app: search-indexer
+  policyTypes:
+    - Egress
+  egress:
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: ecommerce
+          podSelector:
+            matchLabels:
+              app: loyalty-service
+      ports:
+        - port: 8080
+          protocol: TCP
+    - ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
