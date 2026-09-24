@@ -1,0 +1,26 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: floodgate-intra-egress-observability
+  namespace: observability
+  labels:
+    managed-by: floodgate
+    floodgate-policy-type: allow-intranamespace
+    source-workload: ''
+    source-namespace: observability
+    target-service: ''
+    target-port: '0'
+spec:
+  podSelector: {}
+  policyTypes:
+    - Egress
+  egress:
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: observability
+    - ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
